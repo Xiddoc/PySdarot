@@ -11,6 +11,4 @@ def download(show, season, episode):
         return False
 
 
-show = "money heist"
-
-download(show, season=1, episode=1)
+download(show="money heist", season=1, episode=1)

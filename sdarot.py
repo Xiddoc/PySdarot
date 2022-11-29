@@ -8,7 +8,7 @@ import os
 
 class Sdarot:
     def __init__(self, sidra, season, episode):
-        self.ext = ".tv"
+        self.ext = ".tw"  # test with .tv, cloudflare return 522 error status for timeout
         self.session = requests.Session()
         self.session.headers.update({
             'authority': 'sdarot{ext}'.format(ext=self.ext),
