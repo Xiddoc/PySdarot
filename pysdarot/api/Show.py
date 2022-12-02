@@ -94,6 +94,7 @@ class Show:
             }
         )
 
+        return resp
 
 
     def urlEncode(self, query):

@@ -5,9 +5,9 @@ from pysdarot.api.Show import Show
 
 
 class PySdarot:
-    def __init__(self, sdarot_tld: str) -> None:
+    def __init__(self, sdarot_tld: str, username: str = None, password: str = None) -> None:
         """
-        :param sdarot_tld: Sdarot gets banned often, update the TLD (end of the domain, like '.com') via this parameter.
+        :param sdarot_tld: Sdarot is banned often, update the TLD (end of the domain, like '.com') via this parameter.
         """
         # TODO test with .tv, cloudflare return 522 error status for timeout
         self.base = "https://sdarot" + sdarot_tld
@@ -16,6 +16,24 @@ class PySdarot:
         SdarotController.sdarot_base = self.base
         # Initialize our session
         self.__s = SdarotController()
+
+        # Only log in if the user has given both a username and password
+        if username and password:
+            resp = self.__s.post(
+                url='/login',
+                data={
+                    'location': '/',
+                    'username': username,
+                    'password': password,
+                    'login_remember': '1',
+                    'submit_login': '',
+                },
+                allow_redirects=False
+            )
+
+            # The login flow redirects you on success
+            if resp.status_code != 301:
+                raise ValueError(f"Invalid credentials (username or password).")
 
     def search(self, query: str) -> List[Show]:
         """

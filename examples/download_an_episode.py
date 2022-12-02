@@ -1,7 +1,11 @@
 from pysdarot import PySdarot
 
-# You have to manually update the TLD
-s = PySdarot('.tw')
+# You will need a username and password to download episodes
+s = PySdarot(
+    sdarot_tld='.tw',
+    username=input("Username > "),
+    password=input("Password > ")
+)
 
 # Let's get this show's pilot/first episode
 results = s.search("money heist")
