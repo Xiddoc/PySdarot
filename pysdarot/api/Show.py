@@ -84,20 +84,17 @@ class Show:
         # Get the video server
         resp = self.__s.post(
             url="/ajax/watch",
-            data={"watch": "false", "token": token,
-                  "serie": self.sidraData["SID"], "season": self.season,
-                  "episode": self.episode, "type": "episode"})
+            data={
+                "watch": "false",
+                "token": token,
+                "serie": self.show_id,
+                "season": season,
+                "episode": episode,
+                "type": "episode"
+            }
+        )
 
-        """
-        # We need to get the show metadata first so we can build the download URL
-        sidra_data = self.search(show)
 
-        query_url = f"{self.base}/watch/" \
-                    f"{sidra_data['SID']}-{self.urlEncode(sidra_data['Sname'][0])}-{sidra_data['Sname'][1]}/" \
-                    f"season/{season}/episode/{episode}"
-
-        self.__s.get(query_url)
-        """
 
     def urlEncode(self, query):
         return urllib.parse.quote(query)

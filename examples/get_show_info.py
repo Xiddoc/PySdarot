@@ -6,10 +6,6 @@ s = PySdarot('.tw')
 # Let's see if they have this show on their website
 results = s.search("money heist")
 
-if not results:
-    print("They don't have this show :(")
-    exit()
-
 # Yay, they have it!
 my_show = results[0]
 
