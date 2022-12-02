@@ -32,7 +32,7 @@ class PySdarot:
         :return: A list of Show objects.
         """
         # Perform error checking for endpoint
-        resp = self.__s.get(f"{self.base}/ajax/index?search={query}")
+        resp = self.__s.get(f"/ajax/index?search={query}")
         # Get output as class
         return [
             Show(show_id=show['id'], name=show['name'])

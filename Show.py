@@ -17,7 +17,7 @@ class Show:
         :return: The amount of seasons this show has.
         """
         # Perform error checking later
-        resp = self.__s.get(f"https://www.sdarot.tw/watch/{self.show_id}")
+        resp = self.__s.get(f"/watch/{self.show_id}")
 
         # In the past, I used to parse this using RegEx, but it's better to use
         # an actual HTML parser since Sdarot changes their HTML sometimes
@@ -29,11 +29,28 @@ class Show:
         # Get the amount of seasons here
         return len(ul.find_all("li"))
 
-    def get_episode_count(self, season: int):
-        pass
-        # self.__s.get(
-        #     "https://sdarot{ext}/ajax/watch?episodeList={showID}&season={season}".format(ext=self.ext, showID=str(
-        #         self.sidraData["SID"]), season=str(self.season))).text, 'data-episode="', '"'))
+    def get_episode_count(self, season: int) -> int:
+        """
+        Gets the amount of episodes in a show's specific season.
+
+        :param season: The season to query.
+        :return: The amount of epsidoes in this season.
+        """
+        # TODO Error checking later...
+        resp = self.__s.get(
+            url="/ajax/watch",
+            params={
+                "episodeList": self.show_id,
+                "season": season
+            }
+        )
+
+        # In the past, I used to parse this using RegEx, but it's better to use
+        # an actual HTML parser since Sdarot changes their HTML sometimes
+        bs = BeautifulSoup(resp.text, 'html.parser')
+
+        # Get the list of episodes
+        return len(bs.find_all("li", recursive=False))
 
     def download_show(self, show_id: id, season: int, episode: int) -> bytes:
         # We need to get the show metadata first so we can build the download URL

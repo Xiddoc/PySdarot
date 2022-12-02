@@ -1,8 +1,7 @@
-from requests import Session
+from requests import Session, Response
 
 
 class SdarotController(Session):
-
     """
     Maybe in future, using a singleton is better since
     it will use only 1 request for the entire session.
@@ -21,3 +20,13 @@ class SdarotController(Session):
 
         # Get initial 'anon'/guest cookies
         self.get(self.sdarot_base)
+
+        # Add base URL to relative paths
+        self.request = self.request_override
+
+    def request_override(self, method: str, relative_url: str, **kwargs) -> Response:
+        return super().request(
+            method=method,
+            url=self.sdarot_base + relative_url,
+            **kwargs
+        )
