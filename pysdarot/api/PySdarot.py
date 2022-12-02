@@ -12,10 +12,8 @@ class PySdarot:
         # TODO test with .tv, cloudflare return 522 error status for timeout
         self.base = "https://sdarot" + sdarot_tld
 
-        # Override the controller's TLD
-        SdarotController.sdarot_base = self.base
         # Initialize our session
-        self.__s = SdarotController()
+        self.__s = SdarotController(self.base)
 
         # Only log in if the user has given both a username and password
         if username and password:
