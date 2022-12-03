@@ -5,6 +5,7 @@ from typing import Dict
 from bs4 import BeautifulSoup
 
 from pysdarot.controllers.SdarotController import SdarotController
+from pysdarot.handling.errors import SdarotException
 
 
 class Show:
@@ -60,11 +61,10 @@ class Show:
         """
         Download an episode.
         As of now, this returns the entire video data as a bytes object.
-        TODO add filename parameter and buffering.
 
         :param season: The season to select.
         :param episode: The episode from that season to download.
-        :return: The byte data of the episode as a video stream.
+        :param file_path: The file to write the episode data to (as a MP4 file format).
         """
         # TODO error checking...
         resp = self.__s.post(
@@ -99,6 +99,10 @@ class Show:
 
         # Convert to a dictionary
         episode_data: Dict = resp.json()
+
+        # Check if the server threw an error
+        if 'watch' not in episode_data:
+            raise SdarotException(f"Video not available, maybe the server has too much stress: {episode_data}")
 
         # Extract the best format available
         # Turns the keys of the video formats into integers, then extracts the maximum integer
