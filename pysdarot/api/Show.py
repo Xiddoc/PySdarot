@@ -1,4 +1,6 @@
+from shutil import copyfileobj
 from time import sleep
+from typing import Dict
 
 from bs4 import BeautifulSoup
 
@@ -54,7 +56,7 @@ class Show:
         # Get the list of episodes
         return len(bs.find_all("li", recursive=False))
 
-    def download_episode(self, season: int, episode: int) -> bytes:
+    def download_episode(self, season: int, episode: int, file_path: str) -> None:
         """
         Download an episode.
         As of now, this returns the entire video data as a bytes object.
@@ -82,6 +84,7 @@ class Show:
         sleep(30)
 
         # Get the video server
+        # TODO error checking
         resp = self.__s.post(
             url="/ajax/watch",
             data={
@@ -94,43 +97,26 @@ class Show:
             }
         )
 
-        return resp
+        # Convert to a dictionary
+        episode_data: Dict = resp.json()
 
+        # Extract the best format available
+        # Turns the keys of the video formats into integers, then extracts the maximum integer
+        best_format: int = max(map(int, episode_data['watch']))
 
-    def urlEncode(self, query):
-        return urllib.parse.quote(query)
+        # Use the best format for now
+        # TODO offer user to choose a format
+        vid_url: str = episode_data['watch'][str(best_format)]
+        proper_vid_url = "https:" + vid_url
 
-    def getURL(self):
-        data = self.getData()
-        maxQ = 0
-        try:
-            for quality in data["watch"]:
-                if int(quality) > maxQ:
-                    maxQ = int(quality)
-        except KeyError:
-            return False
-        return "https://{serverName}/w/episode/{quality}/{vidID}.mp4?token={token}&time={time}".format(
-            serverName=data["url"], quality=maxQ, vidID=data["VID"], token=data["watch"][str(maxQ)],
-            time=str(data["time"]))
-
-    def download_file(self, fileName):
-        tempURL = self.getURL()
-        if tempURL:
-            try:
-                with self.__s.get(tempURL, stream=True) as r:
-                    with open(fileName, 'wb') as f:
-                        try:
-                            shutil.copyfileobj(r.raw, f)
-                        except:
-                            f.close()
-                            os.remove(fileName)
-                            return False
-                        f.close()
-                    r.close()
-            except requests.exceptions.SSLError:
-                return False
-        else:
-            return tempURL
+        # Download the episode
+        # (Python 3.10 supports parenthesis for with statements, but
+        # we won't use them so we can adapt to multiple versions of Python)
+        with \
+                self.__s.request("GET", proper_vid_url, full_url=True, stream=True) as r, \
+                open(file_path, 'wb') as f:
+            # This method uses buffering as opposed to downloading the entire request without streaming
+            copyfileobj(r.raw, f)
 
     def __repr__(self) -> str:
         return f"<Show: {self.name}>"

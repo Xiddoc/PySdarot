@@ -46,9 +46,16 @@ class SdarotController(Session, metaclass=Singleton):
         # Add base URL to relative paths
         self.request = self.request_override
 
-    def request_override(self, method: str, relative_url: str, **kwargs) -> Response:
-        return super().request(
-            method=method,
-            url=self.__sdarot_base + relative_url,
-            **kwargs
-        )
+    def request_override(self, method: str, relative_url: str, full_url: bool = False, **kwargs) -> Response:
+        # Don't modify URL
+        if full_url:
+            return super().request(method, relative_url, **kwargs)
+        else:
+            # Attach relative URL to base
+            # Pretty weird practice, but it's annoying to pass the base URL around using parameters
+            # If someone has a better suggestion, feel free to drop a PR! :)
+            return super().request(
+                method=method,
+                url=self.__sdarot_base + relative_url,
+                **kwargs
+            )

@@ -15,8 +15,5 @@ my_show = results[0]
 
 # Get the episode
 print("Downloading episode...")
-video = my_show.download_episode(season=1, episode=1)
+my_show.download_episode(season=1, episode=1, file_path="./my_episode.mp4")
 
-# Write it to a file so we can watch it later
-with open("episode.mp4", 'wb') as f:
-    f.write(video)
