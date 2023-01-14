@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from json import load, dump
 from typing import Dict
 
-from pysdarot import PySdarot
+from pysdarot import PySdarot, Show
 
 if __name__ == "__main__":
     # Initialize arg parser
@@ -78,8 +78,7 @@ if __name__ == "__main__":
 
     # Operate for 'download' command
     elif 'show' in args:
-        print(f'[+] Downloading season {args["season"]}, '
-              f'{"ALL EPISODES" if args["episode"] == -1 else "episode " + str(args["episode"])}...')
+        print(f"[+] Identifying show with ID {args['show']}...")
 
         # Check that TLD, username, and password exist
         if not config['tld']:
@@ -88,6 +87,27 @@ if __name__ == "__main__":
         elif not config['username'] or not config['password']:
             print('[-] Sdarot username/password not configured, use "config" command to fix this.')
             exit(1)
+
+        # Log in to Sdarot for downloading
+        PySdarot(sdarot_tld=config['tld'], username=config['username'], password=config['password'])
+        # Get the show name before downloading
+        show = Show(args['show'])
+        show.populate_show_data()
+        print(f"[+] Show found: \n[EN] {show.en_name}\n[HE] {show.he_name}")
+
+        # Start download
+        print(f'[+] Downloading season {args["season"]}, '
+              f'{"ALL EPISODES" if args["episode"] == -1 else "episode " + str(args["episode"])}...')
+
+        # Create base filename for episodes
+        base_name = ''.join([char for char in show.en_name if char.isalpha()])
+
+        # Download episode to file
+        show.download_episode(
+            season=args['season'],
+            episode=args['episode'],
+            file_path=f"{base_name}_S{args['season']}_E{args['episode']}.mp4"
+        )
 
     else:
         print("[-] Error with command parsing...")
