@@ -10,9 +10,11 @@ from pysdarot.handling.errors import SdarotException
 
 class Show:
 
-    def __init__(self, show_id: int, name: str) -> None:
+    def __init__(self, show_id: int, en_name: str, he_name: str) -> None:
         self.show_id = show_id
-        self.name = name
+        self.en_name = en_name
+        self.he_name = he_name
+        self.name = f'{self.he_name} / {self.en_name}'
         self.__s = SdarotController()
 
     def get_season_count(self) -> int:
