@@ -1,5 +1,6 @@
 
 # Don't add testing files
+config.json
 *.mp4
 
 # User-specific stuff
