@@ -1,6 +1,6 @@
 from shutil import copyfileobj
 from time import sleep
-from typing import Dict
+from typing import Dict, Optional
 
 from bs4 import BeautifulSoup
 
@@ -10,12 +10,35 @@ from pysdarot.handling.errors import SdarotException
 
 class Show:
 
-    def __init__(self, show_id: int, en_name: str, he_name: str) -> None:
+    def __init__(self, show_id: int, en_name: Optional[str] = None, he_name: Optional[str] = None) -> None:
         self.show_id = show_id
         self.en_name = en_name
         self.he_name = he_name
         self.name = f'{self.he_name} / {self.en_name}'
         self.__s = SdarotController()
+
+    def populate_show_data(self) -> None:
+        """
+        Populates this object with data about the show,
+        including the name of the show in Hebrew and English.
+        """
+        # TODO perform error checking later
+        resp = self.__s.get(f"/watch/{self.show_id}")
+
+        # Extract the name tag with HTML parsing
+        bs = BeautifulSoup(resp.text, 'html.parser')
+        # NAME TAG LOOKS LIKE THIS:
+        # <h1><strong>בית הקנייר / <span class="ltr">Monkey Heist</span></strong></h1>
+        name_tag = bs.find(id="watchEpisode").find("h1")
+
+        # Extract the english show name
+        en_tag = name_tag.find('span')
+        self.en_name = en_tag.text
+
+        # Kill english tag
+        en_tag.decompose()
+        # Now we can cleanly extract Hebrew name with guarantee of no issues
+        self.he_name = name_tag.text.removesuffix(' / ')
 
     def get_season_count(self) -> int:
         """
