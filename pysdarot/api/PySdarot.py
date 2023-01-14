@@ -13,7 +13,7 @@ class PySdarot:
         :param sdarot_tld: Sdarot is banned often, update the TLD (end of the domain, like '.com') via this parameter.
         """
         # TODO test with .tv, cloudflare return 522 error status for timeout
-        self.base = "https://sdarot" + sdarot_tld
+        self.base = "https://sdarot." + sdarot_tld.strip('.')
 
         # Initialize our session
         self.__s = SdarotController(self.base)
@@ -90,7 +90,7 @@ class PySdarot:
         shows = []
         for show in resp.json():
             # Split the name, autocomplete gives us a full string
-            he_name, en_name = show['name'].split(' / ')
+            he_name, en_name = show['name'].split(' / ', 1)
             # Create the show and add it to the list
             shows.append(
                 Show(
