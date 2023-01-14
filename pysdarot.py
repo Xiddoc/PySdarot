@@ -15,9 +15,11 @@ if __name__ == "__main__":
     subparser = parser.add_subparsers(help="CLI commands", required=True)
 
     # Set up the Sdarot configuration
-    config_cmd = subparser.add_parser("config", help="Set up the Sdarot TLD.")
-    config_cmd.add_argument("tld", type=str, help='The currently active Sdarot TV top level domain (for example, if '
-                                                  'the current website is "sdarot.tw", then you would write "tw".')
+    config_cmd = subparser.add_parser("config", help="Set up the command line app configuration.")
+    config_cmd.add_argument("--tld", type=str, help='The currently active Sdarot TV top level domain (for example, if '
+                                                    'the current website is "sdarot.tw", then you would write "tw".')
+    config_cmd.add_argument("--username", type=str, help='Your SdarotTV USERNAME to use for downloading episodes.')
+    config_cmd.add_argument("--password", type=str, help='Your SdarotTV PASSWORD to use for downloading episodes.')
 
     # Set up the "search"
     search_cmd = subparser.add_parser("search", help="Search the website for shows to watch.")
@@ -33,26 +35,36 @@ if __name__ == "__main__":
     # Finally, parse the arguments themselves
     args = vars(parser.parse_args())
 
-    # Read config
+    """
+    Get the Sdarot CMD-line config.
+    """
     old_config = {}
     try:
         with open("./config.json", 'r') as f:
             config: Dict[str, str] = load(f)
     except OSError:
-        config = {}
+        config = {'tld': None, 'username': None, 'password': None}
 
+    # Operate for 'config' command
     if 'tld' in args:
-        print(f"[+] Configuring the SdarotTV TLD...")
-        print(f'[+] Updating TLD to "{args["tld"]}"...')
+        print(f"[+] Configuring the settings...")
 
         # Update and write
-        config['tld'] = args["tld"]
+        for key, val in args.items():
+            # Only write if not None
+            config[key] = val or config[key]
+
         with open("./config.json", 'w') as f:
             dump(config, f)
 
+        print(f"[+] New settings saved!")
+
+    # Operate for 'search' command
     elif 'query' in args:
         print(f'[+] Querying "{args["query"]}"...')
-        if 'tld' not in config:
+
+        # Check that TLD exists
+        if not config['tld']:
             print('[-] Sdarot TLD not configured, use "config" command to fix this.')
             exit(1)
 
@@ -63,3 +75,20 @@ if __name__ == "__main__":
         print("[+] Found the following shows:")
         for show in shows:
             print(f"[{show.show_id}] {show.name}")
+
+    # Operate for 'download' command
+    elif 'show' in args:
+        print(f'[+] Downloading season {args["season"]}, '
+              f'{"ALL EPISODES" if args["episode"] == -1 else "episode " + str(args["episode"])}...')
+
+        # Check that TLD, username, and password exist
+        if not config['tld']:
+            print('[-] Sdarot TLD not configured, use "config" command to fix this.')
+            exit(1)
+        elif not config['username'] or not config['password']:
+            print('[-] Sdarot username/password not configured, use "config" command to fix this.')
+            exit(1)
+
+    else:
+        print("[-] Error with command parsing...")
+        exit(1)
