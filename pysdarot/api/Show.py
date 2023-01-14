@@ -113,12 +113,8 @@ class Show:
         vid_url: str = episode_data['watch'][str(best_format)]
         proper_vid_url = "https:" + vid_url
 
-        # Download the episode
-        # (Python 3.10 supports parenthesis for with statements, but
-        # we won't use them so we can adapt to multiple versions of Python)
-        with \
-                self.__s.request("GET", proper_vid_url, full_url=True, stream=True) as r, \
-                open(file_path, 'wb') as f:
+        # Download the episode, open a stream to the download URL and a buffer to the file
+        with self.__s.request("GET", proper_vid_url, full_url=True, stream=True) as r, open(file_path, 'wb') as f:
             # This method uses buffering as opposed to downloading the entire request without streaming
             copyfileobj(r.raw, f)
 
