@@ -8,7 +8,7 @@ s = PySdarot(
 )
 
 # Let's get this show's pilot/first episode
-results = s.search("money heist")
+results = s.small_search("money heist")
 
 # First result of the search results
 my_show = results[0]

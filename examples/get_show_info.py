@@ -4,7 +4,7 @@ from pysdarot import PySdarot
 s = PySdarot('.tw')
 
 # Let's see if they have this show on their website
-results = s.search("money heist")
+results = s.small_search("money heist")
 
 # Yay, they have it!
 my_show = results[0]

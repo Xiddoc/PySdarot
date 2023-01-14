@@ -33,7 +33,7 @@ class PySdarot:
             if resp.status_code != 301:
                 raise ValueError(f"Invalid credentials (username or password).")
 
-    def search(self, query: str) -> List[Show]:
+    def small_search(self, query: str) -> List[Show]:
         """
         Queries the search bar.
 
