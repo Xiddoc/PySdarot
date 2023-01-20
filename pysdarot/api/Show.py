@@ -16,17 +16,22 @@ class Show:
         self.he_name = he_name
         self.name = f'{self.he_name} / {self.en_name}'
         self.__s = SdarotController()
+        self.__page = None
+
+    def __get_show_html(self) -> str:
+        # Download page, set it for cache
+        if not self.__page:
+            self.__page = self.__s.get(f"/watch/{self.show_id}").text
+
+        return self.__page
 
     def populate_show_data(self) -> None:
         """
         Populates this object with data about the show,
         including the name of the show in Hebrew and English.
         """
-        # TODO perform error checking later
-        resp = self.__s.get(f"/watch/{self.show_id}")
-
         # Extract the name tag with HTML parsing
-        bs = BeautifulSoup(resp.text, 'html.parser')
+        bs = BeautifulSoup(self.__get_show_html(), 'html.parser')
         # NAME TAG LOOKS LIKE THIS:
         # <h1><strong>בית הקנייר / <span class="ltr">Monkey Heist</span></strong></h1>
         name_tag = bs.find(id="watchEpisode").find("h1")
@@ -46,12 +51,9 @@ class Show:
 
         :return: The amount of seasons this show has.
         """
-        # TODO perform error checking later
-        resp = self.__s.get(f"/watch/{self.show_id}")
-
         # In the past, I used to parse this using RegEx, but it's better to use
         # an actual HTML parser since Sdarot changes their HTML sometimes
-        bs = BeautifulSoup(resp.text, 'html.parser')
+        bs = BeautifulSoup(self.__get_show_html(), 'html.parser')
 
         # Get the "season" unordered list tag
         ul = bs.find(id="season")
@@ -66,7 +68,6 @@ class Show:
         :param season: The season to query.
         :return: The amount of epsidoes in this season.
         """
-        # TODO Error checking later...
         resp = self.__s.get(
             url="/ajax/watch",
             params={
@@ -91,7 +92,6 @@ class Show:
         :param episode: The episode from that season to download.
         :param file_path: The file to write the episode data to (as a MP4 file format).
         """
-        # TODO error checking...
         resp = self.__s.post(
             url="/ajax/watch",
             data={
@@ -109,7 +109,6 @@ class Show:
         sleep(30)
 
         # Get the video server
-        # TODO error checking
         resp = self.__s.post(
             url="/ajax/watch",
             data={

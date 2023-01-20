@@ -93,21 +93,45 @@ if __name__ == "__main__":
         # Get the show name before downloading
         show = Show(args['show'])
         show.populate_show_data()
-        print(f"[+] Show found: \n[EN] {show.en_name}\n[HE] {show.he_name}")
+        print(f"[+] Show found: \n"
+              f"[EN] {show.en_name}\n"
+              f"[HE] {show.he_name}\n"
+              f"[Season #] {show.get_season_count()}\n")
 
         # Start download
+        download_season = args["episode"] == -1
         print(f'[+] Downloading season {args["season"]}, '
-              f'{"ALL EPISODES" if args["episode"] == -1 else "episode " + str(args["episode"])}...')
+              f'{"ALL EPISODES" if download_season else "episode " + str(args["episode"])}...')
 
         # Create base filename for episodes
         base_name = ''.join([char for char in show.en_name if char.isalpha()])
 
-        # Download episode to file
-        show.download_episode(
-            season=args['season'],
-            episode=args['episode'],
-            file_path=f"{base_name}_S{args['season']}_E{args['episode']}.mp4"
-        )
+        # Download entire season
+        if download_season:
+            print("[+] Loading episode information...")
+            ep_count = show.get_episode_count(args["season"])
+
+            print(f"[+] Found {ep_count} episodes in this season...")
+            for episode in range(1, ep_count + 1):
+                # Create filename and download
+                fpath = f"{base_name}_S{args['season']}_E{episode}.mp4"
+                print(f'[+] Downloading episode #{episode} to "{fpath}"...')
+
+                show.download_episode(
+                    season=args['season'],
+                    episode=episode,
+                    file_path=fpath
+                )
+        else:
+            # Download 1 episode
+            fpath = f"{base_name}_S{args['season']}_E{args['episode']}.mp4"
+            print(f'[+] Downloading episode #{args["episode"]} to "{fpath}"...')
+
+            show.download_episode(
+                season=args['season'],
+                episode=args['episode'],
+                file_path=fpath
+            )
 
     else:
         print("[-] Error with command parsing...")
