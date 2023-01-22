@@ -11,14 +11,13 @@ pip install -r requirements.txt
 
 ## Usage
 
-The PySdarot modules offers 2 ways of using it- through a Python API, or by running it with
-command line arguments.
+PySdarot offers 2 ways of using it- through a Python API, or by running it with command line arguments.
 
 ### Command Line
 
 #### Initial Setup
 
-Start by running the `config` commmand to add the current TLD. For example, if the current URL is sdarot.tv:
+Start by running the `config` commmand to add the current TLD. For example, if the current URL is `sdarot.tv`:
 ```cmd
 python pysdarot.py config --tld tv
 ```
