@@ -11,8 +11,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-The PySdarot modules offers 2 ways of using it- through a Python API, or by running it with
-command line arguments.
+PySdarot offers 2 ways of using it- through a Python API, or by running it with command line arguments.
 
 ### Command Line
 
