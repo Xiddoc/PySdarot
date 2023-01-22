@@ -3,13 +3,35 @@ Main file to run command arguments on.
 
 API class is in the `pysdarot` module/folder.
 """
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentTypeError
 from json import load, dump
+import re
 from typing import Dict
 
 from pysdarot import PySdarot, Show
 
 if __name__ == "__main__":
+    def get_sdarot_id_or_url(id_or_url: str) -> int:
+        """
+        Takes either an integer represented as a string, or a URL of a sdarot show.
+
+        :return: If an represented integer was passed, it returns the numeric integer value.
+                If a URL is passed, the URL is parsed for the show ID, and that is returned.
+        """
+        # If number, return the show ID
+        if id_or_url.isnumeric():
+            return int(id_or_url)
+
+        # Extract show ID with RegEx
+        groups = re.search(r'/watch/(\d+)', id_or_url).groups()
+
+        # If we found an ID, return it
+        if groups:
+            return int(groups[0])
+
+        raise ArgumentTypeError(f'Input "{id_or_url}" does not appear to be Show ID or Sdarot URL.')
+
+
     # Initialize arg parser
     parser = ArgumentParser()
     subparser = parser.add_subparsers(help="CLI commands", required=True)
@@ -27,7 +49,7 @@ if __name__ == "__main__":
 
     # Set up the "download" functionality
     download_cmd = subparser.add_parser("download", help="Downloads content from the website.")
-    download_cmd.add_argument("show", type=int, help="The show ID to download.")
+    download_cmd.add_argument("show", type=get_sdarot_id_or_url, help="The show ID or URL to download.")
     download_cmd.add_argument("season", type=int, help="The season number to download.")
     download_cmd.add_argument("episode", type=int, help="The episode number to download. "
                                                         "If set to -1, this downloads the entire season.")

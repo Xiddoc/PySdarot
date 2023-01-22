@@ -47,14 +47,19 @@ This is what the command gave me, note the number on the left is the **show ID**
 
 #### Downloading shows
 
-Once you've found your show, let's download it. The following command will download the show with ID 3284, 
-which is Money Heist (we got this from the previous [`search` command](#Searching for shows)). The number `1` indicates
-we want to download the first season, and the number `2` indicates we want to download the second episode of that
-season. 
+Once you've found your show, use the `download` command to save the content to a file. 
+Pass the URL of the show, the season number, and the episode number.
+For example, here the number `1` indicates we want to download the first season, and the number `2` indicates we want 
+to download the second episode of that season. 
+```cmd
+python pysdarot.py download https://www.sdarot.tw/watch/3284 1 2
+```
+
+You can also pass the show ID directly, like this:
 ```cmd
 python pysdarot.py download 3284 1 2
 ```
-To download the entire season in one go, use `-1` as the episode number. This example will downlaod the 
+To download the **entire season** in one go, use `-1` as the episode number. This example will downlaod the 
 entirety of the first season:
 ```cmd
 python pysdarot.py download 3284 1 -1
