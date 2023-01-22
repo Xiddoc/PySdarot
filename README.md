@@ -18,7 +18,7 @@ command line arguments.
 
 #### Initial Setup
 
-Start by running the `config` commmand to add the current TLD. For example, if the current URL is sdarot.tv:
+Start by running the `config` commmand to add the current TLD. For example, if the current URL is `sdarot.tv`:
 ```cmd
 python pysdarot.py config --tld tv
 ```
