@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     # Set up the "search"
     search_cmd = subparser.add_parser("search", help="Search the website for shows to watch.")
-    search_cmd.add_argument("query", type=str, help="The search query to run.")
+    search_cmd.add_argument("query", type=str, nargs='+', help="The search query to run.")
 
     # Set up the "download" functionality
     download_cmd = subparser.add_parser("download", help="Downloads content from the website.")
@@ -61,7 +61,8 @@ if __name__ == "__main__":
 
     # Operate for 'search' command
     elif 'query' in args:
-        print(f'[+] Querying "{args["query"]}"...')
+        q = ' '.join(args["query"])
+        print(f'[+] Querying "{q}"...')
 
         # Check that TLD exists
         if not config['tld']:
@@ -70,7 +71,7 @@ if __name__ == "__main__":
 
         # Get shows
         sdarot = PySdarot(sdarot_tld=config['tld'])
-        shows = sdarot.small_search(args["query"])
+        shows = sdarot.small_search(q)
 
         print("[+] Found the following shows:")
         for show in shows:
